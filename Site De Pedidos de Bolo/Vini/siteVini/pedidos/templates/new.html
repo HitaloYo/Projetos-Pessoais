@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.1); /* Fundo leve */
+            border-radius: 10px;
+            padding: 30px; /* Aumentado para mais espaço */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px; /* Largura máxima do formulário */
+            margin: auto; /* Centraliza o formulário na página */
+        }
+
+        h2 {
+            color: #ffffff; /* Cor do título */
+            text-align: center; /* Centraliza o título */
+            margin-bottom: 20px; /* Espaçamento inferior */
+        }
+
+        .alert {
+            border-radius: 5px;
+            color: #ff0000; /* Cor do texto de erro */
+            background-color: rgba(255, 0, 0, 0.1); /* Fundo leve para o erro */
+            padding: 10px;
+            margin-bottom: 20px; /* Espaçamento inferior */
+        }
+
+        .form-group label {
+            color: #ffffff; /* Cor das labels */
+            font-weight: bold; /* Destaque para as labels */
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .dropdown-menu {
+            border-radius: 5px;
+            background-color: #ffffff; /* Fundo branco para campos */
+            border: 1px solid #007bff; /* Borda azul para campos */
+            color: #000000; /* Cor do texto nos campos */
+            padding: 10px; /* Aumenta o padding nos campos */
+        }
+
+        /* Estilos dos botões */
+        .btn-primary {
+            background-color: #007bff; /* Cor do botão primário */
+            border: none;
+            border-radius: 5px; /* Borda arredondada */
+            padding: 10px 15px; /* Espaçamento interno */
+            color: #ffffff; /* Cor do texto no botão */
+            width: 100%; /* Botão ocupa a largura total */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Cor do botão primário ao passar o mouse */
+        }
+
+        .btn-outline-primary {
+            color: #007bff; /* Cor do texto no botão outline */
+            border: 1px solid #007bff; /* Borda azul para botão outline */
+            border-radius: 5px; /* Borda arredondada */
+            width: 100%; /* Botão ocupa a largura total */
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff; /* Cor do fundo ao passar o mouse */
+            color: #ffffff; /* Cor do texto ao passar o mouse */
+        }
+
+        .dropdown-menu {
+            background-color: #343a40; /* Fundo escuro para o menu */
+            color: #ffffff; /* Cor do texto no menu */
+            border-radius: 5px; /* Borda arredondada */
+            padding: 10px; /* Adiciona um pouco de padding */
+        }
+
+        .dropdown-item {
+            padding: 10px; /* Aumenta o padding dos itens do dropdown */
+            color: #ffffff; /* Cor do texto dos itens do dropdown */
+        }
+
+        .dropdown-item:hover {
+            background-color: #007bff; /* Cor do fundo ao passar o mouse */
+            color: #ffffff; /* Cor do texto ao passar o mouse */
+        }
+
+        .form-row {
+            margin-bottom: 20px; /* Espaçamento entre as linhas */
+        }
+    </style>
+
+    <div class="form-container">
+        <h2>{{ action }} Pedido</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Erro!</strong> Por favor, verifique os campos a seguir.
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            <li>{{ field }}: {{ errors|join:', ' }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% csrf_token %}
+
+            <!-- Nome -->
+            <div class="form-group form-row">
+                <label for="{{ form.name.id_for_label }}" class="col-md-12">Nome:</label>
+                <div class="col-md-12">
+                    {{ form.name.errors }}
+                    {{ form.name }}
+                </div>
+            </div>
+
+            <!-- Contato -->
+            <div class="form-group form-row">
+                <label for="{{ form.contato.id_for_label }}" class="col-md-12">Contato:</label>
+                <div class="col-md-12">
+                    {{ form.contato.errors }}
+                    {{ form.contato }}
+                </div>
+            </div>
+
+            <!-- Observação -->
+            <div class="form-group form-row">
+                <label for="{{ form.description.id_for_label }}" class="col-md-12">Observação:</label>
+                <div class="col-md-12">
+                    {{ form.description.errors }}
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <!-- Dropdowns para Tamanho, Massa e Recheio -->
+            <div class="row mb-3">
+                <!-- Tamanho -->
+                <div class="col-md-4 form-row">
+                    <label for="sizeDropdown">Tamanho:</label>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" id="sizeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if form.size.value %}{{ form.size.value }}{% else %}Selecione o Tamanho{% endif %}
+                        </button>
+                        <ul class="dropdown-menu w-100" aria-labelledby="sizeDropdown">
+                            {% for choice in form.size.field.choices %}
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('sizeField').value = '{{ choice.0 }}'; document.getElementById('sizeDropdown').innerText = '{{ choice.1 }}';">
+                                        {{ choice.1 }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <input type="hidden" id="sizeField" name="size" value="{{ form.size.value }}">
+                </div>
+
+                <!-- Massa -->
+                <div class="col-md-4 form-row">
+                    <label for="massaDropdown">Massa:</label>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" id="massaDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if form.massa.value %}{{ form.massa.value }}{% else %}Selecione a Massa{% endif %}
+                        </button>
+                        <ul class="dropdown-menu w-100" aria-labelledby="massaDropdown">
+                            {% for choice in form.massa.field.choices %}
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('massaField').value = '{{ choice.0 }}'; document.getElementById('massaDropdown').innerText = '{{ choice.1 }}';">
+                                        {{ choice.1 }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <input type="hidden" id="massaField" name="massa" value="{{ form.massa.value }}">
+                </div>
+
+                <!-- Recheio -->
+                <div class="col-md-4 form-row">
+                    <label for="recheioDropdown">Recheio:</label>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle w-100" type="button" id="recheioDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if form.recheio.value %}{{ form.recheio.value }}{% else %}Selecione o Recheio{% endif %}
+                        </button>
+                        <ul class="dropdown-menu w-100" aria-labelledby="recheioDropdown">
+                            {% for choice in form.recheio.field.choices %}
+                                <li>
+                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('recheioField').value = '{{ choice.0 }}'; document.getElementById('recheioDropdown').innerText = '{{ choice.1 }}';">
+                                        {{ choice.1 }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <input type="hidden" id="recheioField" name="recheio" value="{{ form.recheio.value }}">
+                </div>
+            </div>
+
+            <!-- Botão de Enviar -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary mt-4">{{ action }}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

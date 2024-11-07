@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1rem; /* Espaçamento entre os cards */
+            border-radius: 10px; /* Bordas arredondadas */
+            padding: 15px; /* Padding interno */
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+            padding: 10px; /* Padding do cabeçalho */
+        }
+
+        .card-title,
+        .card-text {
+            color: #ffffff; /* Cor padrão para o modo escuro */
+            margin-bottom: 0.5rem; /* Espaçamento entre as linhas */
+        }
+
+        /* Estilos para modo claro */
+        body.light-mode .card-title,
+        body.light-mode .card-text {
+            color: #333333; /* Cor do texto no modo claro */
+        }
+
+        .alert {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: none;
+            margin-top: 1rem; /* Espaçamento acima do alerta */
+            border-radius: 5px; /* Bordas arredondadas do alerta */
+            padding: 10px; /* Padding interno do alerta */
+        }
+
+        /* Estilos para modo claro */
+        body.light-mode .alert {
+            background-color: rgba(0, 0, 0, 0.1); /* Fundo da alerta no modo claro */
+            color: #000000; /* Cor do texto da alerta no modo claro */
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: #ffffff;
+            border-radius: 25px;
+            transition: background-color 0.3s, transform 0.2s;
+            padding: 8px 12px; /* Aumenta o tamanho do botão */
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .d-flex {
+            justify-content: space-between; /* Distribui os botões */
+            margin-top: 1rem; /* Espaçamento acima dos botões */
+        }
+
+        .d-flex a,
+        .d-flex button {
+            min-width: 80px; /* Largura mínima dos botões */
+        }
+
+        .info-container {
+            display: flex; /* Alinha os boxes lado a lado */
+            justify-content: space-between; /* Espaço entre os boxes */
+            margin-bottom: 1rem; /* Espaçamento abaixo do container */
+        }
+
+        .info-item {
+            flex: 1; /* Faz com que cada box ocupe o mesmo espaço */
+            margin-right: 10px; /* Espaçamento à direita */
+            padding: 10px; /* Padding interno dos itens */
+            border: 1px solid rgba(255, 255, 255, 0.5); /* Borda para cada item */
+            border-radius: 5px; /* Bordas arredondadas dos itens */
+            background-color: rgba(255, 255, 255, 0.2); /* Fundo leve para melhorar a legibilidade */
+        }
+
+        .info-item:last-child {
+            margin-right: 0; /* Remove o espaçamento do último item */
+        }
+    </style>
+
+    <h2 class="mb-4">Pedidos em aberto</h2>
+
+    {% if notes %}
+        {% for note in notes %}
+            <div class="card">
+                <div class="card-header">{{ note.created_at }}</div>
+                <div class="card-body">
+                    <h3 class="card-title"><strong>Nome:</strong> {{ note.name }}</h3>
+                    <h3 class="card-text"><strong>Contato:</strong> {{ note.contato }}</h3>
+                    <h5 class="card-text"><strong>OBS:</strong> {{ note.description }}</h5>
+
+                    <div class="info-container">
+                        <div class="info-item">
+                            <strong>Tamanho:</strong> {{ note.size }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Massa:</strong> {{ note.massa }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Recheio:</strong> {{ note.recheio }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <a href="{% url 'update' note.id %}" class="btn btn-sm btn-custom">Editar</a>
+                        <a href="{% url 'delete' note.id %}" class="btn btn-sm btn-danger">Remover</a>
+                        <form action="{% url 'finalizar' note.id %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-success">Finalizado</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            Nenhum pedido em aberto encontrado.
+        </div>
+    {% endif %}
+{% endblock %}
